@@ -1,21 +1,23 @@
 package main // package declaration
+
 import (
-	"encoding/json" // import statement
 	"fmt"      // import statement
 	"net/http" // import statement
 	"time" // import statement
 
+	"github.com/gin-gonic/gin" // import statement
 	"gorm.io/driver/mysql" // import statement
-	"gorm.io/gorm" // import statement
+	"gorm.io/gorm" // import 
+	
 )
 
 type User struct {
-	ID 	  uint `grom:"coloum:id;primaryKey"` // struct declaration
-	Name  string `grom:"coloum:name"` // struct declaration
-	Email string `grom:"coloum:email"` // struct declaration
-	Age   string `grom:"coloum:age"` // struct declaration
-	CreatedAt time.Time // struct declaration
-	UpdatedAt time.Time // struct declaration
+	ID 	  	  uint 		`grom:"coloum:id;primaryKey"` // struct declaration
+	Name  	  string 	`grom:"coloum:name"` // struct declaration
+	Email 	  string 	`grom:"coloum:email"` // struct declaration
+	Age   	  string 	`grom:"coloum:age"` // struct declaration
+	CreatedAt time.Time `grom:"coloum:createdAt"` // struct declaration
+	UpdatedAt time.Time `grom:"coloum:updatedAt"`// struct declaration
 } // struct declaration
 	
 func main() { // function declaration
@@ -24,12 +26,17 @@ func main() { // function declaration
 	if err != nil { // if statement
 		fmt.Println("failed to connect database") // function call
 	}
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { // function declaration
-		var result User // variable declaration
-		db.Find(&result) // function call
-		response, _ := json.Marshal(result) // variable declaration
-		fmt.Fprintf(w, string(response)) // function call
+
+	route := gin.Default() // variable declaration
+
+	route.GET("/users", func(c *gin.Context) { // function declaration
+		var users []User // variable declaration
+		db.Find(&users) // function call
+		c.JSON(http.StatusOK, gin.H{"data": users}) // function call
 	})
-	http.ListenAndServe(":3000", nil) // function call
+
+	route.Run(":3000") // function call
 } // function declaration
+
+	
 
